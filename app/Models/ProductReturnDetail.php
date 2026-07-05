@@ -11,4 +11,11 @@ class ProductReturnDetail extends Model
         'product_id',
         'quantity',
     ];
+
+    public function productReturn()
+    {
+        return $this->belongsTo(ProductReturn::class, 'return_id');
+    }
+
+    
 }
