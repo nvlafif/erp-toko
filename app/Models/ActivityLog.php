@@ -11,4 +11,9 @@ class ActivityLog extends Model
         'activity',
         'activity_date',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

@@ -9,4 +9,10 @@ class Supplier extends Model
     protected $fillable = [
         'supplier_name',
     ];
+
+    // Relationships of Entities
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
 }

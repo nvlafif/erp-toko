@@ -43,4 +43,10 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    // Relationships of Entities
+    public function activityLogs()
+    {
+        return $this->hasMany(ActivityLog::class);
+    }
 }

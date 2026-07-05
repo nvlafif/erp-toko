@@ -9,4 +9,10 @@ class Category extends Model
     protected $fillable = [
         'category_name',
     ];
+
+    // Relationships of Entities
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
 }
