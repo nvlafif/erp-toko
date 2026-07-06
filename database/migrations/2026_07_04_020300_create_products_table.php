@@ -29,6 +29,8 @@ return new class extends Migration
             $table->decimal('purchase_price', 12, 2);
             $table->decimal('selling_price', 12, 2);
 
+            $table->boolean('is_active')->default(true);
+
             $table->timestamps();
         });
     }

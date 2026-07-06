@@ -16,6 +16,7 @@ class Product extends Model
         'unit_id',
         'purchase_price',
         'selling_price',
+        'is_active',
     ];
 
     // Relationships of Entities

@@ -11,4 +11,5 @@ class OperatingCost extends Model
         'amount',
         'expense_date',
     ];
+    
 }
