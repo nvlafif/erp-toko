@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\SupplierController;
+use App\Http\Controllers\Api\TransactionController;
 use App\Http\Controllers\Api\UnitController;
 use Illuminate\Support\Facades\Route;
 
@@ -18,6 +19,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('suppliers', SupplierController::class)->only(['index', 'show']);
     Route::apiResource('units', UnitController::class)->only(['index', 'show']);
     Route::apiResource('products', ProductController::class)->only(['index', 'show']);
+    Route::apiResource('transactions', TransactionController::class)->only(['index', 'store', 'show'])
+        ->middleware('role:owner,kasir');
 
     Route::middleware('role:owner,admin_gudang')->group(function () {
         Route::apiResource('categories', CategoryController::class)->except(['index', 'show']);
