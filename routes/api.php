@@ -1,7 +1,10 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\SupplierController;
+use App\Http\Controllers\Api\UnitController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('auth/login', [AuthController::class, 'login']);
@@ -11,5 +14,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('auth/logout', [AuthController::class, 'logout']);
     Route::post('auth/register', [AuthController::class, 'register'])->middleware('role:owner');
 
-    Route::apiResource('products', ProductController::class);
+    Route::apiResource('categories', CategoryController::class)->only(['index', 'show']);
+    Route::apiResource('suppliers', SupplierController::class)->only(['index', 'show']);
+    Route::apiResource('units', UnitController::class)->only(['index', 'show']);
+    Route::apiResource('products', ProductController::class)->only(['index', 'show']);
+
+    Route::middleware('role:owner,admin_gudang')->group(function () {
+        Route::apiResource('categories', CategoryController::class)->except(['index', 'show']);
+        Route::apiResource('suppliers', SupplierController::class)->except(['index', 'show']);
+        Route::apiResource('units', UnitController::class)->except(['index', 'show']);
+        Route::apiResource('products', ProductController::class)->except(['index', 'show']);
+    });
 });

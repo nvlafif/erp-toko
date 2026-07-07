@@ -7,22 +7,64 @@ use App\Http\Requests\ProductRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
+        $request->validate([
+            'stock_status' => ['nullable', 'in:low,out'],
+            'expired_before' => ['nullable', 'date'],
+        ]);
+
+        $perPage = min(max($request->integer('per_page', 15), 1), 100);
+
         $products = Product::with(['category', 'supplier', 'unit'])
             ->where('is_active', true)
-            ->get();
+            ->when($request->filled('q'), function ($query) use ($request) {
+                $keyword = $request->string('q');
+
+                $query->where(function ($query) use ($keyword) {
+                    $query
+                        ->where('product_name', 'like', '%'.$keyword.'%')
+                        ->orWhere('barcode', 'like', '%'.$keyword.'%');
+                });
+            })
+            ->when($request->filled('category_id'), function ($query) use ($request) {
+                $query->where('category_id', $request->integer('category_id'));
+            })
+            ->when($request->filled('supplier_id'), function ($query) use ($request) {
+                $query->where('supplier_id', $request->integer('supplier_id'));
+            })
+            ->when($request->filled('unit_id'), function ($query) use ($request) {
+                $query->where('unit_id', $request->integer('unit_id'));
+            })
+            ->when($request->input('stock_status') === 'out', function ($query) {
+                $query->where('stock', 0);
+            })
+            ->when($request->input('stock_status') === 'low', function ($query) {
+                $query->where('stock', '>', 0)->where('stock', '<=', 10);
+            })
+            ->when($request->filled('expired_before'), function ($query) use ($request) {
+                $query->whereDate('expired_date', '<=', $request->date('expired_before'));
+            })
+            ->orderBy('product_name')
+            ->paginate($perPage);
 
         return response()->json([
             'success' => true,
             'message' => 'Products retrieved successfully.',
             'data' => ProductResource::collection($products),
+            'meta' => [
+                'current_page' => $products->currentPage(),
+                'last_page' => $products->lastPage(),
+                'per_page' => $products->perPage(),
+                'total' => $products->total(),
+            ],
         ]);
     }
 
