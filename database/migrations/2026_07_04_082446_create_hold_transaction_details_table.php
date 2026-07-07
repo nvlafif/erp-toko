@@ -14,15 +14,15 @@ return new class extends Migration
         Schema::create('hold_transaction_details', function (Blueprint $table) {
             $table->id();
 
-            // Relasi ke transaksi
-            $table->foreignId('transaction_id')
-                  ->constrained('transactions')
-                  ->cascadeOnDelete();
+            // Relasi ke transaksi yang ditahan
+            $table->foreignId('hold_transaction_id')
+                ->constrained('hold_transactions')
+                ->cascadeOnDelete();
 
             // Relasi ke barang
             $table->foreignId('product_id')
-                  ->constrained('products')
-                  ->restrictOnDelete();
+                ->constrained('products')
+                ->restrictOnDelete();
 
             // Jumlah barang yang dibeli
             $table->decimal('quantity');

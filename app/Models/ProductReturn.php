@@ -7,8 +7,17 @@ use Illuminate\Database\Eloquent\Model;
 class ProductReturn extends Model
 {
     protected $table = 'returns';
+
     protected $fillable = [
         'transaction_id',
+        'user_id',
+        'return_date',
+        'return_total',
+    ];
+
+    protected $casts = [
+        'return_date' => 'datetime',
+        'return_total' => 'decimal:2',
     ];
 
     public function transaction()
@@ -30,10 +39,5 @@ class ProductReturn extends Model
     public function returnDetails()
     {
         return $this->hasMany(ProductReturnDetail::class, 'return_id');
-    }
-
-    public function product()
-    {
-        return $this->belongsTo(Product::class);
     }
 }

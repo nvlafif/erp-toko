@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductRequest;
+use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use Illuminate\Http\JsonResponse;
-use App\Http\Resources\ProductResource;
 
 class ProductController extends Controller
 {
@@ -15,9 +15,9 @@ class ProductController extends Controller
      */
     public function index(): JsonResponse
     {
-        $products = Product::with(['category','supplier','unit',])
-        ->where('is_active', true)
-        ->get();
+        $products = Product::with(['category', 'supplier', 'unit'])
+            ->where('is_active', true)
+            ->get();
 
         return response()->json([
             'success' => true,

@@ -19,6 +19,14 @@ class Product extends Model
         'is_active',
     ];
 
+    protected $casts = [
+        'expired_date' => 'date',
+        'stock' => 'integer',
+        'purchase_price' => 'decimal:2',
+        'selling_price' => 'decimal:2',
+        'is_active' => 'boolean',
+    ];
+
     // Relationships of Entities
     public function category()
     {
@@ -35,4 +43,18 @@ class Product extends Model
         return $this->belongsTo(Unit::class);
     }
 
+    public function transactionDetails()
+    {
+        return $this->hasMany(TransactionDetail::class);
+    }
+
+    public function returnDetails()
+    {
+        return $this->hasMany(ProductReturnDetail::class);
+    }
+
+    public function holdTransactionDetails()
+    {
+        return $this->hasMany(HoldTransactionDetail::class);
+    }
 }

@@ -11,5 +11,9 @@ class OperatingCost extends Model
         'amount',
         'expense_date',
     ];
-    
+
+    protected $casts = [
+        'amount' => 'decimal:2',
+        'expense_date' => 'datetime',
+    ];
 }
