@@ -23,6 +23,8 @@ class StoreUserRequest extends FormRequest
             'username' => ['required', 'string', 'max:255', 'alpha_dash', 'unique:users,username'],
             'password' => ['required', 'string', 'min:6', 'confirmed'],
             'role' => ['required', Rule::in(['owner', 'admin_gudang', 'kasir'])],
+            'is_active' => ['sometimes', 'boolean'],
+            'is_approved' => ['sometimes', 'boolean'],
         ];
     }
 }

@@ -22,6 +22,8 @@ class User extends Authenticatable
         'username',
         'password',
         'role',
+        'is_active',
+        'is_approved',
     ];
 
     /**
@@ -42,6 +44,8 @@ class User extends Authenticatable
     {
         return [
             'password' => 'hashed',
+            'is_active' => 'boolean',
+            'is_approved' => 'boolean',
         ];
     }
 

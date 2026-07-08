@@ -25,6 +25,16 @@ class AuthController extends Controller
             ]);
         }
 
+        if (! $user->is_active || ! $user->is_approved) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Akun belum aktif atau belum disetujui.',
+                'errors' => [
+                    'username' => ['Akun belum aktif atau belum disetujui.'],
+                ],
+            ], 403);
+        }
+
         $token = $user->createToken(
             name: $request->input('device_name', 'pos-device'),
             abilities: [$user->role],
@@ -68,6 +78,22 @@ class AuthController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Logout successful.',
+        ]);
+    }
+
+    public function updateUserStatus(Request $request, User $user): JsonResponse
+    {
+        $data = $request->validate([
+            'is_active' => ['required', 'boolean'],
+            'is_approved' => ['required', 'boolean'],
+        ]);
+
+        $user->update($data);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'User status updated successfully.',
+            'data' => new UserResource($user->fresh()),
         ]);
     }
 }

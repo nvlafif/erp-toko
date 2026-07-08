@@ -18,6 +18,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('auth/me', [AuthController::class, 'me']);
     Route::post('auth/logout', [AuthController::class, 'logout']);
     Route::post('auth/register', [AuthController::class, 'register'])->middleware('role:owner');
+    Route::patch('users/{user}', [AuthController::class, 'updateUserStatus'])->middleware('role:owner');
 
     Route::get('activity-logs', [ActivityLogController::class, 'index'])->middleware('role:owner');
     Route::apiResource('operating-costs', OperatingCostController::class)->middleware('role:owner');

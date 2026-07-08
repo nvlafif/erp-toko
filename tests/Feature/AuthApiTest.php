@@ -90,6 +90,53 @@ class AuthApiTest extends TestCase
         $response->assertForbidden();
     }
 
+    public function test_inactive_user_cannot_login(): void
+    {
+        User::factory()->create([
+            'username' => 'inactive-user',
+            'password' => 'password',
+            'role' => 'kasir',
+            'is_active' => false,
+            'is_approved' => false,
+        ]);
+
+        $response = $this->postJson('/api/auth/login', [
+            'username' => 'inactive-user',
+            'password' => 'password',
+        ]);
+
+        $response
+            ->assertStatus(403)
+            ->assertJsonPath('success', false);
+    }
+
+    public function test_owner_can_update_user_status(): void
+    {
+        Sanctum::actingAs(User::factory()->owner()->create());
+        $user = User::factory()->create([
+            'role' => 'kasir',
+            'is_active' => true,
+            'is_approved' => true,
+        ]);
+
+        $response = $this->patchJson('/api/users/'.$user->id, [
+            'is_active' => false,
+            'is_approved' => false,
+        ]);
+
+        $response
+            ->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data.is_active', false)
+            ->assertJsonPath('data.is_approved', false);
+
+        $this->assertDatabaseHas('users', [
+            'id' => $user->id,
+            'is_active' => false,
+            'is_approved' => false,
+        ]);
+    }
+
     public function test_authenticated_user_can_logout(): void
     {
         $user = User::factory()->create();
