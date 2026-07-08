@@ -55,6 +55,38 @@ class TransactionApiTest extends TestCase
         $this->assertSame(7, $product->fresh()->stock);
     }
 
+    public function test_transaction_creates_activity_log_for_kasir(): void
+    {
+        $user = User::factory()->create([
+            'role' => 'kasir',
+        ]);
+        Sanctum::actingAs($user);
+
+        $product = $this->createProduct([
+            'stock' => 10,
+            'selling_price' => 5000,
+        ]);
+
+        $response = $this->postJson('/api/transactions', [
+            'customer_money' => 20000,
+            'items' => [
+                [
+                    'product_id' => $product->id,
+                    'quantity' => 2,
+                ],
+            ],
+        ]);
+
+        $transactionId = $response->json('data.id');
+
+        $response->assertCreated();
+
+        $this->assertDatabaseHas('activity_logs', [
+            'user_id' => $user->id,
+            'activity' => "Membuat transaksi penjualan #{$transactionId}",
+        ]);
+    }
+
     public function test_transaction_rejects_insufficient_customer_money(): void
     {
         Sanctum::actingAs(User::factory()->create([

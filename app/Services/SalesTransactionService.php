@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\ActivityLog;
 use App\Models\Product;
 use App\Models\Transaction;
 use App\Models\User;
@@ -72,6 +73,12 @@ class SalesTransactionService
                 $transaction->transactionDetails()->create($detail);
                 $products->get($detail['product_id'])->decrement('stock', $detail['quantity']);
             }
+
+            ActivityLog::create([
+                'user_id' => $user->id,
+                'activity' => "Membuat transaksi penjualan #{$transaction->id}",
+                'activity_date' => now(),
+            ]);
 
             return $transaction;
         });
