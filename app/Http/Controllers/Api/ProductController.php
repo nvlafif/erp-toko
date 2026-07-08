@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductRequest;
 use App\Http\Resources\ProductResource;
+use App\Models\Notification;
 use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -138,6 +139,28 @@ class ProductController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Product deactivated successfully.',
+        ]);
+    }
+
+    public function checkLowStock(Product $product): JsonResponse
+    {
+        if ($product->stock <= 10) {
+            Notification::create([
+                'user_id' => auth()->id(),
+                'title' => 'Low stock alert',
+                'message' => $product->product_name.' is running low (current stock: '.$product->stock.').',
+                'type' => 'inventory',
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Low stock check completed.',
+            'data' => [
+                'product_id' => $product->id,
+                'stock' => $product->stock,
+                'alert_created' => $product->stock <= 10,
+            ],
         ]);
     }
 }

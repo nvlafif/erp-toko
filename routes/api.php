@@ -34,6 +34,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('suppliers', SupplierController::class)->only(['index', 'show']);
     Route::apiResource('units', UnitController::class)->only(['index', 'show']);
     Route::apiResource('products', ProductController::class)->only(['index', 'show']);
+    Route::post('products/{product}/check-low-stock', [ProductController::class, 'checkLowStock']);
     Route::apiResource('transactions', TransactionController::class)->only(['index', 'store', 'show'])
         ->middleware('role:owner,kasir');
     Route::apiResource('returns', ProductReturnController::class)->only(['index', 'store', 'show'])
