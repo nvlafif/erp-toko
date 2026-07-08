@@ -18,4 +18,18 @@ class ProductStockAdjustmentRequest extends FormRequest
             'reason' => ['nullable', 'string', 'max:255'],
         ];
     }
+
+    public function bodyParameters(): array
+    {
+        return [
+            'quantity' => [
+                'description' => 'Quantity to adjust (can be positive or negative).',
+                'example' => '-2',
+            ],
+            'reason' => [
+                'description' => 'Reason for the stock adjustment.',
+                'example' => 'Damaged item',
+            ],
+        ];
+    }
 }

@@ -20,4 +20,20 @@ class OperatingCostRequest extends FormRequest
             'expense_date' => ['required', 'date'],
         ];
     }
-}
+    public function bodyParameters(): array
+    {
+        return [
+            'cost_name' => [
+                'description' => 'Name of the operating cost.',
+                'example' => 'Rent',
+            ],
+            'amount' => [
+                'description' => 'Amount of the operating cost.',
+                'example' => '5000000',
+            ],
+            'cost_date' => [
+                'description' => 'Date of the operating cost.',
+                'example' => '2026-07-01',
+            ],
+        ];
+    }}

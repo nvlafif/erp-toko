@@ -21,4 +21,14 @@ class CheckoutHoldTransactionRequest extends FormRequest
             'customer_money' => ['required', 'numeric', 'min:0'],
         ];
     }
+
+    public function bodyParameters(): array
+    {
+        return [
+            'customer_money' => [
+                'description' => 'Amount of money paid by customer for checkout.',
+                'example' => '25000',
+            ],
+        ];
+    }
 }
