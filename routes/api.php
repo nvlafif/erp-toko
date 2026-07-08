@@ -29,6 +29,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('operating-costs', OperatingCostController::class)->middleware('role:owner');
     Route::get('stock-movements', [StockMovementController::class, 'index'])->middleware('role:owner,admin_gudang');
     Route::get('reports/summary', [ReportController::class, 'summary'])->middleware('role:owner');
+    Route::get('reports/dashboard', [ReportController::class, 'dashboard'])->middleware('role:owner');
 
     Route::apiResource('categories', CategoryController::class)->only(['index', 'show']);
     Route::apiResource('suppliers', SupplierController::class)->only(['index', 'show']);
