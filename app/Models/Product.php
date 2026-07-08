@@ -19,6 +19,33 @@ class Product extends Model
         'is_active',
     ];
 
+    protected static function booted(): void
+    {
+        static::updated(function (self $product): void {
+            $dirty = $product->getDirty();
+
+            if (empty($dirty)) {
+                return;
+            }
+
+            $changes = [];
+
+            foreach ($dirty as $attribute => $value) {
+                $changes[$attribute] = [
+                    'from' => $product->getOriginal($attribute),
+                    'to' => $value,
+                ];
+            }
+
+            ProductAudit::create([
+                'product_id' => $product->id,
+                'user_id' => auth()->id(),
+                'action' => 'updated',
+                'changes' => $changes,
+            ]);
+        });
+    }
+
     protected $casts = [
         'expired_date' => 'date',
         'stock' => 'integer',
@@ -61,5 +88,10 @@ class Product extends Model
     public function stockMovements()
     {
         return $this->hasMany(StockMovement::class);
+    }
+
+    public function audits()
+    {
+        return $this->hasMany(ProductAudit::class);
     }
 }

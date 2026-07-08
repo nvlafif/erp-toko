@@ -7,6 +7,7 @@ use App\Http\Requests\ProductRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Notification;
 use App\Models\Product;
+use App\Models\ProductAudit;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -160,6 +161,37 @@ class ProductController extends Controller
                 'product_id' => $product->id,
                 'stock' => $product->stock,
                 'alert_created' => $product->stock <= 10,
+            ],
+        ]);
+    }
+
+    public function audit(Product $product): JsonResponse
+    {
+        $audits = ProductAudit::query()
+            ->where('product_id', $product->id)
+            ->with('user')
+            ->latest()
+            ->paginate(15);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Product audit history retrieved successfully.',
+            'data' => $audits->getCollection()->map(fn (ProductAudit $audit) => [
+                'id' => $audit->id,
+                'action' => $audit->action,
+                'changes' => $audit->changes,
+                'user' => $audit->user ? [
+                    'id' => $audit->user->id,
+                    'name' => $audit->user->name,
+                    'username' => $audit->user->username,
+                ] : null,
+                'created_at' => $audit->created_at,
+            ]),
+            'meta' => [
+                'current_page' => $audits->currentPage(),
+                'last_page' => $audits->lastPage(),
+                'per_page' => $audits->perPage(),
+                'total' => $audits->total(),
             ],
         ]);
     }
