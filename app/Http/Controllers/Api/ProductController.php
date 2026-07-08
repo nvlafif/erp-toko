@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductRequest;
+use App\Http\Requests\ProductStockAdjustmentRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Notification;
 use App\Models\Product;
 use App\Models\ProductAudit;
+use App\Models\StockMovement;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -192,6 +194,32 @@ class ProductController extends Controller
                 'last_page' => $audits->lastPage(),
                 'per_page' => $audits->perPage(),
                 'total' => $audits->total(),
+            ],
+        ]);
+    }
+
+    public function adjustStock(ProductStockAdjustmentRequest $request, Product $product): JsonResponse
+    {
+        $data = $request->validated();
+
+        $product->increment('stock', $data['quantity']);
+
+        StockMovement::create([
+            'product_id' => $product->id,
+            'movement_type' => 'adjustment',
+            'quantity' => $data['quantity'],
+            'reference_type' => Product::class,
+            'reference_id' => $product->id,
+            'movement_date' => now(),
+            'description' => $data['reason'] ?? 'Stock adjustment',
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Stock adjusted successfully.',
+            'data' => [
+                'product_id' => $product->id,
+                'new_stock' => $product->fresh()->stock,
             ],
         ]);
     }
