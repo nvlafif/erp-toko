@@ -57,4 +57,9 @@ class Product extends Model
     {
         return $this->hasMany(HoldTransactionDetail::class);
     }
+
+    public function stockMovements()
+    {
+        return $this->hasMany(StockMovement::class);
+    }
 }

@@ -8,6 +8,7 @@ use App\Http\Resources\ProductReturnResource;
 use App\Models\Product;
 use App\Models\ProductReturn;
 use App\Models\ProductReturnDetail;
+use App\Models\StockMovement;
 use App\Models\Transaction;
 use App\Models\TransactionDetail;
 use Illuminate\Http\JsonResponse;
@@ -121,7 +122,18 @@ class ProductReturnController extends Controller
 
             foreach ($details as $detail) {
                 $productReturn->returnDetails()->create($detail);
-                $products->get($detail['product_id'])->increment('stock', $detail['quantity']);
+                $product = $products->get($detail['product_id']);
+                $product->increment('stock', $detail['quantity']);
+
+                StockMovement::create([
+                    'product_id' => $product->id,
+                    'movement_type' => 'return',
+                    'quantity' => $detail['quantity'],
+                    'reference_type' => ProductReturn::class,
+                    'reference_id' => $productReturn->id,
+                    'movement_date' => now(),
+                    'description' => 'Retur penjualan',
+                ]);
             }
 
             return $productReturn;

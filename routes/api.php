@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\HoldTransactionController;
 use App\Http\Controllers\Api\OperatingCostController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\ProductReturnController;
+use App\Http\Controllers\Api\StockMovementController;
 use App\Http\Controllers\Api\SupplierController;
 use App\Http\Controllers\Api\TransactionController;
 use App\Http\Controllers\Api\UnitController;
@@ -22,6 +23,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('activity-logs', [ActivityLogController::class, 'index'])->middleware('role:owner');
     Route::apiResource('operating-costs', OperatingCostController::class)->middleware('role:owner');
+    Route::get('stock-movements', [StockMovementController::class, 'index'])->middleware('role:owner,admin_gudang');
 
     Route::apiResource('categories', CategoryController::class)->only(['index', 'show']);
     Route::apiResource('suppliers', SupplierController::class)->only(['index', 'show']);

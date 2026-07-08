@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\ActivityLog;
 use App\Models\Product;
+use App\Models\StockMovement;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Support\Collection;
@@ -71,7 +72,18 @@ class SalesTransactionService
 
             foreach ($details as $detail) {
                 $transaction->transactionDetails()->create($detail);
-                $products->get($detail['product_id'])->decrement('stock', $detail['quantity']);
+                $product = $products->get($detail['product_id']);
+                $product->decrement('stock', $detail['quantity']);
+
+                StockMovement::create([
+                    'product_id' => $product->id,
+                    'movement_type' => 'sale',
+                    'quantity' => -$detail['quantity'],
+                    'reference_type' => Transaction::class,
+                    'reference_id' => $transaction->id,
+                    'movement_date' => now(),
+                    'description' => 'Penjualan',
+                ]);
             }
 
             ActivityLog::create([
